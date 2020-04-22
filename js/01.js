@@ -3,27 +3,28 @@
 // use npm http-server -c-1 to run the server with cache disabled
 
 // scene camera renderer
-var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
-var renderer = new THREE.WebGLRenderer();
-
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+let renderer = new THREE.WebGLRenderer();
+let mouse = {x: 0, y: 0}
+let rayCast
 
 // set renderer to window size and appened to <body>
 renderer.setSize( window.innerWidth, window.innerHeight )
 document.body.appendChild( renderer.domElement )
 
 // cube geometry
-var geometry = new THREE.BoxGeometry()
+let geometry = new THREE.BoxGeometry()
 
 // basic color material
-var material = new THREE.MeshPhongMaterial( { color: 0xffffff } )
+let material = new THREE.MeshPhongMaterial( { color: 0xffffff } )
 
 // texture material
 let texLoader = new THREE.TextureLoader()
 
 let woodTex = texLoader.load("./texture/container.jpg")
 
-var woodMaterial = new THREE.MeshPhongMaterial({
+let woodMaterial = new THREE.MeshPhongMaterial({
     map: woodTex,
     color: 0xffffff
 })
@@ -69,15 +70,46 @@ scene.add(PointLight2)
 
 
 
-
-
-
 // set camera position
 camera.position.z = 10
 
+// on click event
+document.addEventListener("mousedown", onMousedown, false)
+let ray = new THREE.Raycaster()
+
+
+function onMousedown(event) {
+    console.log("mouse clicked");
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1
+    mouse.y = 1 - (event.clientY / window.innerHeight) * 2
+    
+
+    console.log(mouse.x)
+    console.log(mouse.y)
+
+    
+    ray.setFromCamera(mouse,camera)
+    
+    let intersects = ray.intersectObjects(cubes, true)
+    console.log(intersects)
+
+    if (intersects.length > 0) {
+        for (let i = 0; i < cubes.length; i++) {
+            if (cubes[i] === intersects[0].object) {
+                cubes[i].scale.x = 0.1
+            } 
+        }        
+    }
+
+
+
+
+}
+
+
 
 // animation function
-var animate = () => {
+let animate = () => {
     requestAnimationFrame( animate )
 
     // rotate all cubes
@@ -89,5 +121,5 @@ var animate = () => {
 }
 
 
-// execute animation
+// execute functions
 animate()
