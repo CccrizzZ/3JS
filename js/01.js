@@ -1,73 +1,93 @@
-let scene, camera, renderer, cube;
 
-// Init 
-function init() {
-    // Scene
-    scene = new THREE.Scene();
+// 01 creating a textured box
+// use npm http-server -c-1 to run the server with cache disabled
 
-    // Camera
-    camera = new THREE.PerspectiveCamera(
-        75,                                           // FOV
-        window.innerWidth / window.innerHeight,       // Aspect
-        0.1,                                          // Near
-        1000                                          // Far
-    );
+// scene camera renderer
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+var renderer = new THREE.WebGLRenderer();
 
-    // Renderer
-    renderer = new THREE.WebGLRenderer({ antialias : true });
 
-    // Set renderer size
-    renderer.setSize(window.innerWidth, window.innerHeight);
+// set renderer to window size and appened to <body>
+renderer.setSize( window.innerWidth, window.innerHeight )
+document.body.appendChild( renderer.domElement )
 
-    // Attach to HTML
-    document.body.appendChild(renderer.domElement);
+// cube geometry
+var geometry = new THREE.BoxGeometry()
 
-    // Create a cube
-    const geometry = new THREE.BoxGeometry(2, 2, 2);
-    // const material = new THREE.MeshBasicMaterial({color : 0x00ff00});
-    // Texture
-    const texture = new THREE.TextureLoader().load("texture/wood.gif");
-    const material = new THREE.MeshBasicMaterial({map:texture});
+// basic color material
+var material = new THREE.MeshPhongMaterial( { color: 0xffffff } )
 
-    cube = new THREE.Mesh(geometry, material);
+// texture material
+let texLoader = new THREE.TextureLoader()
 
+let woodTex = texLoader.load("./texture/container.jpg")
+
+var woodMaterial = new THREE.MeshPhongMaterial({
+    map: woodTex,
+    color: 0xffffff
+})
+
+
+
+
+// array of cubes
+let cubes = []
+
+
+// create cube and push into the array
+for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 5; j++) {
+        var cube = new THREE.Mesh( geometry, woodMaterial )
+        cube.scale.set(1,1,1)
+        cube.position.set(i * 2 - 4, j * 2 - 4, 0)
+        cubes.push(cube)
         
+    }
+}
 
-    // Add cube to scene
-    scene.add(cube);
+// add all elements from the array to the scene
+cubes.forEach(cube => {
+    scene.add( cube )
+})
 
-    // Set camera position
-    camera.position.z = 5;
+
+
+
+// light
+let AmbientLight = new THREE.AmbientLight(0xffffff, 0.2)
+scene.add(AmbientLight)
+
+let PointLight = new THREE.PointLight(0xff00ff, 2, 5, 1)
+PointLight.position.set(1, 0, 2)
+scene.add(PointLight)
+
+let PointLight2 = new THREE.PointLight(0x00ff22, 2, 5, 1)
+PointLight2.position.set(-1, 0, 2)
+scene.add(PointLight2)
+
+
+
+
+
+
+
+// set camera position
+camera.position.z = 10
+
+
+// animation function
+var animate = () => {
+    requestAnimationFrame( animate )
+
+    // rotate all cubes
+    cubes.forEach(cube => {
+        cube.rotation.y += 0.01
+    })
+
+    renderer.render( scene, camera )
 }
 
 
-// Update animation
-function animate() {
-    requestAnimationFrame(animate);
-
-    // Rotation of cube
-    cube.rotation.y += 0.01;
-    cube.rotation.z += 0.01;
-
-
-
-    renderer.render(scene, camera);
-}
-
-
-// When resizing window
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-// Listen to window resize
-window.addEventListener('resize', onWindowResize, false);
-
-
-// Init
-init();
-
-// Update animation
-animate();
+// execute animation
+animate()
