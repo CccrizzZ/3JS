@@ -97,14 +97,15 @@ function onMousedown(event) {
         for (let i = 0; i < cubes.length; i++) {
             if (cubes[i] === intersects[0].object) {
                 cubes[i].scale.x = 0.1
-            } 
-        }        
+                
+            }
+        }    
     }
-
-
-
-
 }
+
+
+
+
 
 
 
