@@ -1,0 +1,25 @@
+{
+  "name": "3js",
+  "version": "1.0.0",
+  "description": "![In development](https://github.com/CccrizzZ/3JS/blob/master/screen.png)",
+  "main": "index.js",
+  "dependencies": {
+    "@types/three": "^0.103.2",
+    "ecstatic": "^4.1.4",
+    "three": "^0.115.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CccrizzZ/3JS.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CccrizzZ/3JS/issues"
+  },
+  "homepage": "https://github.com/CccrizzZ/3JS#readme"
+}
