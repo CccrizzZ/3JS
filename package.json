@@ -1,25 +1,22 @@
 {
-  "name": "3js",
+  "name": "3js-pg",
   "version": "1.0.0",
-  "description": "![In development](https://github.com/CccrizzZ/3JS/blob/master/screen.png)",
+  "description": "",
   "main": "index.js",
-  "dependencies": {
-    "@types/three": "^0.103.2",
-    "ecstatic": "^4.1.4",
-    "three": "^0.115.0"
-  },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CccrizzZ/3JS.git"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "http-server -c-1",
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/CccrizzZ/3JS/issues"
+  "dependencies": {
+    "http-server": "^0.12.3",
+    "serve": "^11.3.0",
+    "three": "^0.116.1"
   },
-  "homepage": "https://github.com/CccrizzZ/3JS#readme"
+  "devDependencies": {
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
 }

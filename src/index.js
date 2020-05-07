@@ -1,7 +1,8 @@
+import * as THREE from '../node_modules/three/build/three.module.js'
+import {OrbitControls} from '../node_modules/three/examples/jsm/controls/OrbitControls.js'
+
 // 01 creating a textured box
 // use npm http-server -c-1 to run the server with cache disabled
-
-// const OrbitControls = require('three-orbit-controls')(THREE);
 
 
 // scene camera renderer
@@ -25,12 +26,19 @@ let Floor
 let AmbientLight
 let PointLight
 let PointLight2 
+let PointLight3 
+let PointLight4 
+let PointLight5 
+
 // raycast
 let mouse = {x: 0, y: 0}
 let ray
 let rayCast
-
+// camera orbit control
 let OrbitControls_1
+
+
+
 
 let init = () => {
     scene = new THREE.Scene()
@@ -41,24 +49,42 @@ let init = () => {
     renderer.setSize( window.innerWidth, window.innerHeight )
     document.body.appendChild( renderer.domElement )
    
+
+
+    
+
+    // // Skybox
+    // let sky = new Sky()
+    // sky.scale.setScalar(450000)
+    // scene.add(sky)
+    
+    // sunSphere = new THREE.Mesh(
+    //     new THREE.SphereBufferGeometry(20000, 16, 8),
+    //     new THREE.MeshBasicMaterial({color: 0xffffff})
+    // )
+    // sunSphere.position.y = -700000
+    // sunSphere.visible = false;
+    // scene.add(sunSphere)
+
+
+
+
+
+
+
+
     // texture material
     texLoader = new THREE.TextureLoader()
     
-
-
-
-
-
+    // basic color material
+    material = new THREE.MeshPhongMaterial( { color: 0xffffff } )    
+    
+    // texture from pictures
+    woodTex = texLoader.load("../asset/bw.jpg")
+    
     // cube geometry
     geometry = new THREE.BoxGeometry()
 
-    // basic color material
-    material = new THREE.MeshPhongMaterial( { color: 0xffffff } )
-
-
-    // texture from pictures
-    woodTex = texLoader.load("./texture/bw.jpg")
-    
     // material from texture loaded from jpg
     woodMaterial = new THREE.MeshPhongMaterial({
         map: woodTex,
@@ -88,10 +114,9 @@ let init = () => {
 
 
 
-
-
+    // Floor
     FloorGeometry = new THREE.BoxGeometry()
-    FloorTex = new texLoader.load("./texture/grass.jpg")
+    FloorTex = new texLoader.load("../asset/grass.jpg")
     FloorMaterial = new THREE.MeshLambertMaterial({
         map: FloorTex,
         color: 0xffffff
@@ -106,7 +131,8 @@ let init = () => {
     // set camera position
     camera.position.z = 5
 
-    OrbitControls_1 = new THREE.OrbitControls(camera, renderer.domElement)
+    // orbit control
+    OrbitControls_1 = new OrbitControls(camera, renderer.domElement)
     OrbitControls_1.enableZoom = true;
 
     // Lights
@@ -184,7 +210,7 @@ let animate = () => {
     requestAnimationFrame( animate )
 
     // update orbit camera
-    // OrbitControl_1.update()
+    OrbitControls_1.update()
 
     // rotate all cubes
     cubes.forEach(cube => {
