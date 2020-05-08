@@ -1,5 +1,7 @@
 import * as THREE from '../node_modules/three/build/three.module.js'
 import {OrbitControls} from '../node_modules/three/examples/jsm/controls/OrbitControls.js'
+import {Sky} from '../node_modules/three/examples/jsm/objects/Sky.js'
+
 
 // 01 creating a textured box
 // use npm http-server -c-1 to run the server with cache disabled
@@ -9,36 +11,41 @@ import {OrbitControls} from '../node_modules/three/examples/jsm/controls/OrbitCo
 let scene
 let camera 
 let renderer
+
 // array of cubes
 let cubes = []
+
 // cube components
 let geometry
 let material 
 let texLoader
 let woodTex
 let woodMaterial
+
 // floor
 let FloorGeometry
 let FloorTex
 let FloorMaterial
 let Floor
+
 // lights
 let AmbientLight
 let PointLight
 let PointLight2 
-let PointLight3 
-let PointLight4 
-let PointLight5 
+let SpotLight
+
 
 // raycast
 let mouse = {x: 0, y: 0}
 let ray
-let rayCast
+
 // camera orbit control
 let OrbitControls_1
 
 
-
+// sky
+let sky
+let sunSphere
 
 let init = () => {
     scene = new THREE.Scene()
@@ -50,23 +57,36 @@ let init = () => {
     document.body.appendChild( renderer.domElement )
    
 
+    
 
     
 
-    // // Skybox
-    // let sky = new Sky()
-    // sky.scale.setScalar(450000)
-    // scene.add(sky)
+    // Skybox
+    sunSphere = new THREE.Mesh(
+        new THREE.SphereBufferGeometry(20000, 16, 8),
+        new THREE.MeshBasicMaterial({color: 0xffffff})
+    )
+    sunSphere.position.set( 0 ,0, -1000)
+    sunSphere.visible = true;
+    scene.add(sunSphere)
+
+    sky = new Sky()
+    sky.scale.setScalar(500)
+    let uniforms = sky.material.uniforms
+    console.log(sky);
     
-    // sunSphere = new THREE.Mesh(
-    //     new THREE.SphereBufferGeometry(20000, 16, 8),
-    //     new THREE.MeshBasicMaterial({color: 0xffffff})
-    // )
-    // sunSphere.position.y = -700000
-    // sunSphere.visible = false;
-    // scene.add(sunSphere)
+    uniforms["turbidity"].value = 10
+    uniforms["rayleigh"].value = 0.75
+    uniforms["mieCoefficient"].value = 0.005
+    uniforms["mieDirectionalG"].value = 0.35
+    uniforms["luminance"].value = 0.1
+    uniforms[ "sunPosition" ].value.copy( sunSphere.position )
+    scene.add(sky)
+    
+        
+    
 
-
+        
 
 
 
@@ -88,7 +108,7 @@ let init = () => {
     // material from texture loaded from jpg
     woodMaterial = new THREE.MeshPhongMaterial({
         map: woodTex,
-        color: 0x009900
+        color: 0xffffff
     })
 
     // create cube and push into the array
@@ -97,6 +117,7 @@ let init = () => {
             var cube = new THREE.Mesh( geometry, woodMaterial )
             cube.scale.set(1,1,1)
             cube.position.set(i * 2 - 2, j * 2 - 2, 0)
+
             cubes.push(cube)
         
         }
@@ -104,6 +125,7 @@ let init = () => {
 
     // add all elements from the array to the scene
     cubes.forEach(cube => {
+        
         scene.add( cube )
     })
 
@@ -117,55 +139,67 @@ let init = () => {
     // Floor
     FloorGeometry = new THREE.BoxGeometry()
     FloorTex = new texLoader.load("../asset/grass.jpg")
-    FloorMaterial = new THREE.MeshLambertMaterial({
+    FloorMaterial = new THREE.MeshStandardMaterial({
         map: FloorTex,
         color: 0xffffff
     })
     Floor = new THREE.Mesh(FloorGeometry, FloorMaterial)
-    Floor.scale.set(10,1,10)
+    Floor.scale.set(50,1,50)
     Floor.position.set(0,-5,0)
 
     scene.add(Floor)
 
 
     // set camera position
-    camera.position.z = 5
+    camera.position.set(0,0,10)
 
     // orbit control
     OrbitControls_1 = new OrbitControls(camera, renderer.domElement)
     OrbitControls_1.enableZoom = true;
 
     // Lights
-    AmbientLight = new THREE.AmbientLight(0xff8888, 0.4)
+    AmbientLight = new THREE.AmbientLight(0xffffff, 0.5)
     scene.add(AmbientLight)
 
-    // PointLight = new THREE.PointLight(0xff00ff, 2, 5, 1)
-    // PointLight.position.set(1, 0, 2)
-    // scene.add(PointLight)
 
-    // PointLight2 = new THREE.PointLight(0x00ff22, 2, 5, 1)
-    // PointLight2.position.set(-1, 0, 2)
-    // scene.add(PointLight2)
+    PointLight = new THREE.PointLight(0xff00ff, 2, 5, 1)
+    PointLight.position.set(1, 0, 2)
+    scene.add(PointLight)
 
-    PointLight3 = new THREE.PointLight(0xffffff, 2, 5, 1)
-    PointLight3.position.set(0, -2, 0)
-    scene.add(PointLight3)
+    PointLight2 = new THREE.PointLight(0x00ff22, 2, 5, 1)
+    PointLight2.position.set(-1, 0, 2)
+    scene.add(PointLight2)
 
-    PointLight4 = new THREE.PointLight(0xffffff, 2, 5, 1)
-    PointLight4.position.set(0, 0, 2)
-    scene.add(PointLight4)
+    SpotLight = new THREE.SpotLight(0xffffff, 1)
+    SpotLight.position.set( 0, 10, 0 );
+    SpotLight.angle = Math.PI/4;
+    SpotLight.penumbra = 0.05;
+    SpotLight.decay = 10;
+    SpotLight.distance = 200;
+    scene.add( SpotLight );
 
-    PointLight5 = new THREE.PointLight(0xff0000, 2, 5, 1)
-    PointLight5.position.set(0, -1, 5)
-    scene.add(PointLight5)
+
 
     
     // add on click event listener
     document.addEventListener("mousedown", onMousedown, false)
+    window.addEventListener( 'resize', onWindowResize, false );
 
     // raycaster for click
     ray = new THREE.Raycaster()
 
+
+
+}
+
+			
+
+function onWindowResize() {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
 
 
 }
