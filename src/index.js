@@ -24,7 +24,9 @@ let woodMaterial
 
 // floor
 let FloorGeometry
-let FloorTex
+let FloorDiffuseTex
+let FloorNormalTex
+
 let FloorMaterial
 let Floor
 
@@ -66,7 +68,7 @@ let init = () => {
         new THREE.SphereBufferGeometry(20000, 16, 8),
         new THREE.MeshBasicMaterial({color: 0xffffff})
     )
-    sunSphere.position.set( 0 ,0, -1000)
+    sunSphere.position.set( 0 ,60000, -1000)
     sunSphere.visible = true;
     scene.add(sunSphere)
 
@@ -75,8 +77,8 @@ let init = () => {
     let uniforms = sky.material.uniforms
     console.log(sky);
     
-    uniforms["turbidity"].value = 10
-    uniforms["rayleigh"].value = 0.75
+    uniforms["turbidity"].value = 5
+    uniforms["rayleigh"].value = 0.3
     uniforms["mieCoefficient"].value = 0.005
     uniforms["mieDirectionalG"].value = 0.35
     uniforms["luminance"].value = 0.1
@@ -108,6 +110,7 @@ let init = () => {
     // material from texture loaded from jpg
     woodMaterial = new THREE.MeshPhongMaterial({
         map: woodTex,
+        reflectivity: 1.0,
         color: 0xffffff
     })
 
@@ -117,12 +120,12 @@ let init = () => {
             var cube = new THREE.Mesh( geometry, woodMaterial )
             cube.scale.set(1,1,1)
             cube.position.set(i * 2 - 2, j * 2 - 2, 0)
-
+            
             cubes.push(cube)
         
         }
     }
-
+    
     // add all elements from the array to the scene
     cubes.forEach(cube => {
         
@@ -138,44 +141,47 @@ let init = () => {
 
     // Floor
     FloorGeometry = new THREE.BoxGeometry()
-    FloorTex = new texLoader.load("../asset/grass.jpg")
-    FloorMaterial = new THREE.MeshStandardMaterial({
-        map: FloorTex,
+    FloorDiffuseTex = new texLoader.load("../asset/marble/marble-diffuse.jpg")
+    FloorNormalTex = new texLoader.load("../asset/marble/marble-normal.jpg")
+
+    FloorMaterial = new THREE. MeshPhongMaterial({
+        map: FloorDiffuseTex,
+        normalMap: FloorNormalTex,
         color: 0xffffff
     })
     Floor = new THREE.Mesh(FloorGeometry, FloorMaterial)
-    Floor.scale.set(50,1,50)
-    Floor.position.set(0,-5,0)
+    Floor.scale.set(20,20,20)
+    Floor.position.set(0,-13,0)
 
     scene.add(Floor)
 
 
     // set camera position
-    camera.position.set(0,0,10)
+    camera.position.set(0,1,8)
 
     // orbit control
     OrbitControls_1 = new OrbitControls(camera, renderer.domElement)
     OrbitControls_1.enableZoom = true;
 
     // Lights
-    AmbientLight = new THREE.AmbientLight(0xffffff, 0.5)
+    AmbientLight = new THREE.AmbientLight(0xffffff, 0.6)
     scene.add(AmbientLight)
 
 
-    PointLight = new THREE.PointLight(0xff00ff, 2, 5, 1)
-    PointLight.position.set(1, 0, 2)
-    scene.add(PointLight)
+    // PointLight = new THREE.PointLight(0xff00ff, 2, 5, 1)
+    // PointLight.position.set(1, 0, 2)
+    // scene.add(PointLight)
 
-    PointLight2 = new THREE.PointLight(0x00ff22, 2, 5, 1)
-    PointLight2.position.set(-1, 0, 2)
-    scene.add(PointLight2)
+    // PointLight2 = new THREE.PointLight(0x00ff22, 2, 5, 1)
+    // PointLight2.position.set(-1, 0, 2)
+    // scene.add(PointLight2)
 
     SpotLight = new THREE.SpotLight(0xffffff, 1)
-    SpotLight.position.set( 0, 10, 0 );
+    SpotLight.position.set( 0, 100, 0 );
     SpotLight.angle = Math.PI/4;
     SpotLight.penumbra = 0.05;
-    SpotLight.decay = 10;
-    SpotLight.distance = 200;
+    SpotLight.decay = 2;
+    SpotLight.distance = 400;
     scene.add( SpotLight );
 
 
@@ -248,7 +254,10 @@ let animate = () => {
 
     // rotate all cubes
     cubes.forEach(cube => {
-        cube.rotation.y += 0.01
+        cube.rotation.y -= 0.01
+        cube.rotation.z += 0.01
+        cube.rotation.x += 0.01
+
     })
 
     renderer.render( scene, camera )
