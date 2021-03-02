@@ -15,7 +15,7 @@
     "http-server": "^0.12.3",
     "serialize-javascript": "^4.0.0",
     "serve": "^11.3.2",
-    "three": "^0.116.1"
+    "three": "^0.125.0"
   },
   "devDependencies": {
     "webpack": "^4.44.1",
